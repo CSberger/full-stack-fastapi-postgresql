@@ -1,0 +1,21 @@
+db_uri = os.getenv('DB_URI')
+release_name = os.getenv('RELEASE_NAME', 'tilt-base-project')
+
+settings = ['db.url=postgresql://postgres:postgres@{}-postgresql/postgres'.format(release_name)]
+if db_uri:
+  settings = ['db.url=' + db_uri, 'postgres.enabled=false']
+
+#helm dependencies update
+local_resource('helm update', cmd='pushd infra/chart ; helm dependencies update ; popd')
+
+docker_build('local/base-project2', '.', dockerfile='infra/backend.dockerfile')
+yaml = helm(
+  'infra/chart',
+  # The release name, equivalent to helm --name
+  name='tilt-base-project',
+  values=['infra/chart/values-local.yaml'],
+  # Values to set from the command-line
+  set=settings
+)
+
+k8s_yaml(yaml)

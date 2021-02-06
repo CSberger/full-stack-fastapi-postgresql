@@ -1,0 +1,18 @@
+db:
+  createSecret: true
+  url: 'postgresql://postgres:postgres@rr-postgresql/postgres'
+
+image:
+  registry: local
+  tag: 0.0.1
+
+postgresql:
+  enabled: true
+  persistence:
+    enabled: false
+  postgresqlUsername: postgres
+  postgresqlPassword: postgres
+  postgresqlDatabase: db
+
+service:
+  type: LoadBalancer
